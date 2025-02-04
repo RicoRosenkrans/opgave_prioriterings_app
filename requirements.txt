@@ -1,0 +1,32 @@
+# API Framework
+fastapi>=0.104.0
+uvicorn>=0.24.0
+
+# Database
+sqlalchemy>=2.0.23
+alembic>=1.12.1
+databases>=0.8.0
+asyncpg>=0.29.0  # PostgreSQL driver
+python-dotenv>=1.0.0  # for environment variables
+
+# AI/LLM
+langchain>=0.1.0
+langchain-community>=0.0.1
+langchain-core>=0.1.0
+openai>=1.0.0
+
+# WebSocket
+python-socketio>=5.10.0
+
+# Testing
+pytest>=7.4.3
+pytest-asyncio>=0.21.1
+httpx>=0.25.1  # for testing FastAPI
+pytest-cov>=4.1.0  # for test coverage
+
+# Development tools
+black>=23.10.1  # code formatting
+flake8>=6.1.0  # linting
+isort>=5.12.0  # import sorting
+
+redis==5.0.1 

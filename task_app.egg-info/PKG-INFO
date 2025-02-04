@@ -1,0 +1,11 @@
+Metadata-Version: 2.2
+Name: task-app
+Version: 0.1
+Requires-Dist: fastapi
+Requires-Dist: uvicorn
+Requires-Dist: sqlalchemy
+Requires-Dist: alembic
+Requires-Dist: databases
+Requires-Dist: asyncpg
+Requires-Dist: python-dotenv
+Dynamic: requires-dist

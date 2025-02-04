@@ -1,0 +1,35 @@
+# OS filer
+.DS_Store
+Thumbs.db
+
+# IDE og editor filer
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Dependencies
+node_modules/
+vendor/
+
+# Build output
+dist/
+build/
+
+# Python virtuelle miljøer
+venv/
+env/
+.env/
++.env
++*.env
++!.env.example
+
+# GitHub Actions
+.coverage
+coverage.xml
+.pytest_cache/
+__pycache__/
+*.pyc
+
+# Heroku
+*.log 
