@@ -33,7 +33,14 @@ app.include_router(api_router, prefix=settings.API_V1_STR)
 
 @app.on_event("startup")
 async def startup_event():
-    await init_db()
+    print("Starting up...")
+    print(f"Connecting to database: {settings.DATABASE_URL}")
+    try:
+        await init_db()
+        print("Successfully connected to database and initialized tables")
+    except Exception as e:
+        print(f"Error connecting to database: {str(e)}")
+        raise e
 
 @app.on_event("shutdown")
 async def shutdown_event():
