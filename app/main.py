@@ -1,9 +1,12 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.api.v1.endpoints import tasks, ai_assistance
 from app.models.base import init_db, close_db
+from app.api.v1.api import api_router
+from app.api.v1.ws.dialog import router as ws_router
+from app.core.config import settings
+import logging
 
-app = FastAPI(title="Task Prioritization App")
+app = FastAPI(title=settings.PROJECT_NAME)
 
 # CORS middleware configuration
 app.add_middleware(
@@ -15,12 +18,8 @@ app.add_middleware(
 )
 
 # Include routers
-app.include_router(tasks.router, prefix="/api/v1/tasks", tags=["tasks"])
-app.include_router(
-    ai_assistance.router,
-    prefix="/api/v1/ai",
-    tags=["ai-assistance"]
-)
+app.include_router(api_router, prefix=settings.API_V1_STR)
+app.include_router(ws_router)
 
 @app.on_event("startup")
 async def startup_event():

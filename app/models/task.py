@@ -1,29 +1,42 @@
-from sqlalchemy import Column, Integer, String, Text, DateTime, Enum
-from sqlalchemy.sql import func
-import enum
-from app.models.base import Base
+from pydantic import BaseModel
+from datetime import datetime
+from enum import Enum
+from typing import Any
 
-class TaskPriority(str, enum.Enum):
-    LOW = "low"
-    MEDIUM = "medium"
-    HIGH = "high"
+class TaskStatus(str, Enum):
+    TODO = "TODO"
+    IN_PROGRESS = "IN_PROGRESS"
+    DONE = "DONE"
 
-class TaskStatus(str, enum.Enum):
-    TODO = "todo"
-    IN_PROGRESS = "in_progress"
-    DONE = "done"
+class TaskPriority(str, Enum):
+    LOW = "LOW"
+    MEDIUM = "MEDIUM"
+    HIGH = "HIGH"
+    URGENT = "URGENT"
 
-class Task(Base):
-    __tablename__ = "tasks"
+class Task(BaseModel):
+    id: int
+    title: str
+    description: str | None = None
+    status: TaskStatus = TaskStatus.TODO
+    priority: TaskPriority = TaskPriority.MEDIUM
+    deadline: datetime | None = None
+    created_at: datetime | None = None
+    updated_at: datetime | None = None
 
-    id = Column(Integer, primary_key=True, index=True)
-    title = Column(String(100), nullable=False)
-    description = Column(Text)
-    priority = Column(Enum(TaskPriority), default=TaskPriority.MEDIUM)
-    status = Column(Enum(TaskStatus), default=TaskStatus.TODO)
-    deadline = Column(DateTime(timezone=True), nullable=True)
-    created_at = Column(DateTime(timezone=True), server_default=func.now())
-    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
+    class Config:
+        from_attributes = True  # Tillader konvertering fra SQLAlchemy modeller
+        json_encoders = {
+            datetime: lambda dt: dt.isoformat() if dt else None
+        }
 
     def __repr__(self):
-        return f"<Task(id={self.id}, title='{self.title}', status='{self.status}')>" 
+        return f"<Task(id={self.id}, title='{self.title}', status='{self.status}')>"
+
+    def dict(self, *args, **kwargs) -> dict[str, Any]:
+        # Konverter datetime objekter til ISO format strings
+        d = super().dict(*args, **kwargs)
+        for field in ['deadline', 'created_at', 'updated_at']:
+            if d.get(field):
+                d[field] = d[field].isoformat()
+        return d 

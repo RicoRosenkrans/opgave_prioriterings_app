@@ -1,22 +1,43 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, WebSocket
 from fastapi.middleware.cors import CORSMiddleware
+from app.models.base import init_db, close_db
+from app.api.v1.api import api_router
+from app.core.config import settings
+from app.websocket.connection_manager import ConnectionManager
 
-app = FastAPI(title="Task Prioritization App")
+app = FastAPI(title=settings.PROJECT_NAME)
+manager = ConnectionManager()
 
 # CORS middleware configuration
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],  # Frontend URL
+    allow_origins=["http://localhost:3000", "http://localhost:3004"],  # Tilføj alle dine frontend origins
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
+    expose_headers=["*"]
 )
 
-# Import and include routers
-from app.api.v1.endpoints import tasks, users
+@app.websocket("/ws")
+async def websocket_endpoint(websocket: WebSocket):
+    await manager.connect(websocket)
+    try:
+        while True:
+            data = await websocket.receive_json()
+            await manager.broadcast(data)
+    except:
+        await manager.disconnect(websocket)
 
-app.include_router(tasks.router, prefix="/api/v1/tasks", tags=["tasks"])
-app.include_router(users.router, prefix="/api/v1/users", tags=["users"])
+# Include router
+app.include_router(api_router, prefix=settings.API_V1_STR)
+
+@app.on_event("startup")
+async def startup_event():
+    await init_db()
+
+@app.on_event("shutdown")
+async def shutdown_event():
+    await close_db()
 
 @app.get("/")
 async def root():

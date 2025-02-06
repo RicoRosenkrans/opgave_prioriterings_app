@@ -29,4 +29,7 @@ black>=23.10.1  # code formatting
 flake8>=6.1.0  # linting
 isort>=5.12.0  # import sorting
 
-redis==5.0.1 
+redis==5.0.1
+
+pydantic>=2.0.0
+pydantic-settings>=2.0.0 
